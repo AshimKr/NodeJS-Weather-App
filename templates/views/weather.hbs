@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {{>header}}
+</head>
+
+<body>
+    <!-- head section/ navbar -->
+    {{>headNavbar}}
+
+    <!-- main header -->
+    <div class="container-fluid main_header">
+        <div class="row">
+            <div class="col-md-10 col-12 mx-auto">
+                <div class="main_content">
+                    <form action="" class="temp_form">
+                        <input type="text" id="cityName" placeholder="Enter your city" autocomplete="off">
+                        <input type="submit" value="serach" id="submitBtn">
+                    </form>
+                </div>
+                <div class="tempInformation">
+                    <div class="top_layer">
+                        <p id="day">Friday</p>
+                        <p id="today_date">6th Aug</p>
+                    </div>
+                    <div class="main_layer">
+                        <p id="city_name">Get Output Here</p>
+                        <div class="middle_layer data_hide">
+                            <p id="temp"><span id="temp_real">0</span> <sup>o</sup>C</p>
+                            <p id="temp_status"></p>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+    {{>footer}}
+
+    <script>
+        const submitBtn = document.getElementById("submitBtn");
+        const cityName = document.getElementById("cityName");
+        const city_name = document.getElementById("city_name");
+        const tempSide = document.getElementById('temp_real');
+        const temp_status = document.getElementById("temp_status");
+        const datahide = document.querySelector(".middle_layer");
+        const day = document.getElementById("day");
+        const date = document.getElementById("today_date")
+
+
+
+
+
+        let now = new Date();
+        const currDay = () => {
+
+            const weekday = new Array(7);
+            weekday[0] = 'Sunday';
+            weekday[1] = 'Monday';
+            weekday[2] = 'Tuesday';
+            weekday[3] = 'Wednesday';
+            weekday[4] = 'Thursday';
+            weekday[5] = 'Friday';
+            weekday[6] = 'Saturday';
+
+            let day = weekday[now.getDay()];
+            return day;
+        }
+        const currtime = () => {
+            const month = new Array(12);
+            month[0] = 'Jan';
+            month[1] = 'Feb';
+            month[2] = 'Mar';
+            month[3] = 'Apr';
+            month[4] = 'May';
+            month[5] = 'Jun';
+            month[6] = 'Jul';
+            month[7] = 'Aug';
+            month[8] = 'Sep';
+            month[9] = 'Oct';
+            month[10] = 'Nov';
+            month[11] = 'Dec';
+
+            let months = month[now.getMonth()];
+            let date = now.getDate();
+
+
+            return ` ${date}th, ${months} `;
+        }
+
+
+
+        day.innerText = currDay();
+        date.innerText = currtime();
+
+
+
+
+
+
+
+
+        const getInfo = async (e) => {
+            e.preventDefault();
+            let city = cityName.value;
+
+            if (city === "") {
+                city_name.innerText = "Please Enter a City Name"
+                datahide.classList.add('data_hide');
+            } else {
+                try {
+                    let url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=6723aea7085e84d340819ca5e07b5640`;
+                    let apiData = await fetch(url);
+                    let data = await apiData.json()
+                    let arrData = [data];
+
+                    city_name.innerText = `${arrData[0].name} , ${arrData[0].sys.country}`;
+
+                    let tempp = (arrData[0].main.temp - 273).toFixed(2);
+
+                    tempSide.innerText = tempp;
+                    //temp_status.innerText= arrData[0].weather[0].main;
+
+                    const tempMood = arrData[0].weather[0].main;
+
+                    if (tempMood == "Clear") {
+                        temp_status.innerHTML = "<i class='fab fa-skyatlas'></i>";
+                    } else if (tempMood == "Clouds") {
+                        temp_status.innerHTML = "<i class='fas fa-cloud'></i>";
+                    } else if (tempMood == "Haze") {
+                        temp_status.innerHTML = "<i class='fas fa-smog'></i>";
+                    } else if (tempMood == "Rain") {
+                        temp_status.innerHTML = "<i class='fas fa-cloud-rain'></i>";
+                    } else {
+                        temp_status.innerHTML = "<i class='fas fa-fan'></i>";
+                    }
+                    datahide.classList.remove('data_hide');
+                }
+                catch {
+                    city_name.innerText = "Please Enter a City Name properly"
+                    datahide.classList.add('data_hide');
+                }
+            }
+
+
+        }
+
+        submitBtn.addEventListener('click', getInfo)
+
+
+    </script>
+</body>
+
+</html>
