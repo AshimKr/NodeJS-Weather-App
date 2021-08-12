@@ -3,6 +3,8 @@ const path = require('path');
 const hbs = require('hbs');
 const app = express();
 
+const port = process.env.PORT || 3100;
+
 // const static_path = path.join(__dirname, "../public");
 // console.log(path.join(__dirname, "../views/partials"));
 
@@ -14,8 +16,12 @@ app.set('view engine', "hbs");
 
 const viewPath = path.join(__dirname,"../templates/views")
 app.set("views", viewPath)
-app.get('/', (req,res)=>{
-    res.render('index');
+app.get("", (req,res)=>{
+    res.render("weather");
+})
+
+app.get("/home", (req,res)=>{
+    res.render("index")
 })
 
 app.get('/about', (req,res)=>{
@@ -34,4 +40,6 @@ app.get('*', (req,res)=>{
 
 
 
-app.listen(4100,'127.0.0.1');
+app.listen(port , ()=>{
+    console.log(`connection on ${port}`);
+})
